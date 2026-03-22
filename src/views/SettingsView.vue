@@ -9,17 +9,28 @@ import {
   restoreFromFileSystem,
   isFileSystemSupported,
 } from '../services/syncService'
+import {
+  isAutoBackupEnabled,
+  enableAutoBackup,
+  disableAutoBackup,
+  getLastBackupTime,
+  performAutoBackup,
+} from '../services/autoBackupService'
 import { showToast, showConfirmDialog, showDialog } from 'vant'
 
 const router = useRouter()
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const importing = ref(false)
 const autoSyncActive = ref(false)
+const autoBackupActive = ref(false)
 const fsSupported = ref(false)
+const lastBackupTime = ref<Date | null>(null)
 
 onMounted(() => {
   fsSupported.value = isFileSystemSupported()
   autoSyncActive.value = isAutoSyncEnabled()
+  autoBackupActive.value = isAutoBackupEnabled()
+  lastBackupTime.value = getLastBackupTime()
 })
 
 async function handleExport() {
@@ -122,17 +133,83 @@ async function handleManualRestore() {
     importing.value = false
   }
 }
+
+function handleToggleAutoBackup(value: boolean) {
+  if (value) {
+    enableAutoBackup()
+    autoBackupActive.value = true
+    showDialog({
+      title: '自动备份已启用',
+      message: '每24小时自动导出一次备份文件到下载文件夹，建议定期整理备份文件。',
+      confirmButtonText: '好的',
+    })
+  } else {
+    disableAutoBackup()
+    autoBackupActive.value = false
+    lastBackupTime.value = null
+    showToast('已关闭自动备份')
+  }
+}
+
+async function handleManualBackup() {
+  const success = await performAutoBackup()
+  if (success) {
+    lastBackupTime.value = new Date()
+    showToast('备份文件已下载')
+  } else {
+    showToast('备份失败，请检查是否有数据')
+  }
+}
+
+function formatBackupTime(time: Date | null): string {
+  if (!time) return '从未备份'
+  const now = Date.now()
+  const diff = now - time.getTime()
+  const hours = Math.floor(diff / (60 * 60 * 1000))
+  if (hours < 1) return '刚刚'
+  if (hours < 24) return `${hours}小时前`
+  const days = Math.floor(hours / 24)
+  return `${days}天前`
+}
 </script>
 
 <template>
   <div class="settings-view">
     <van-nav-bar title="设置" left-arrow @click-left="router.back()" />
 
-    <van-cell-group inset style="margin-top: 16px" v-if="fsSupported">
-      <van-cell title="自动同步" center>
+    <van-cell-group inset style="margin-top: 16px">
+      <van-cell title="自动备份" center>
         <template #label>
           <span style="color: #969799; font-size: 13px">
-            {{ autoSyncActive ? '数据自动保存到文件夹，清除浏览器数据后自动恢复' : '启用后数据自动保存到本地文件夹' }}
+            {{ autoBackupActive ? `每24小时自动导出备份 · 上次备份：${formatBackupTime(lastBackupTime)}` : '启用后每24小时自动导出备份文件' }}
+          </span>
+        </template>
+        <template #right-icon>
+          <van-switch
+            :model-value="autoBackupActive"
+            @update:model-value="handleToggleAutoBackup"
+            size="20"
+          />
+        </template>
+      </van-cell>
+
+      <van-cell
+        v-if="autoBackupActive"
+        title="立即备份"
+        is-link
+        @click="handleManualBackup"
+      >
+        <template #label>
+          <span style="color: #969799; font-size: 13px">手动触发一次备份</span>
+        </template>
+      </van-cell>
+    </van-cell-group>
+
+    <van-cell-group inset style="margin-top: 16px" v-if="fsSupported">
+      <van-cell title="文件夹同步（桌面版）" center>
+        <template #label>
+          <span style="color: #969799; font-size: 13px">
+            {{ autoSyncActive ? '数据自动保存到文件夹' : '仅桌面浏览器支持' }}
           </span>
         </template>
         <template #right-icon>
@@ -146,7 +223,7 @@ async function handleManualRestore() {
 
       <van-cell
         v-if="autoSyncActive"
-        title="手动恢复数据"
+        title="从文件夹恢复"
         is-link
         @click="handleManualRestore"
       >
@@ -177,9 +254,9 @@ async function handleManualRestore() {
 
     <div style="padding: 24px 16px; color: #969799; font-size: 13px; line-height: 1.6">
       <p style="margin-bottom: 8px">💡 使用建议：</p>
-      <p v-if="fsSupported">• 启用自动同步，数据永久保存，不怕误删</p>
-      <p v-if="fsSupported">• 同步文件夹建议选择iCloud Drive或其他云盘</p>
-      <p v-if="!fsSupported">• 定期手动备份，防止数据丢失</p>
+      <p>• 启用自动备份，每天自动导出备份文件</p>
+      <p>• 定期整理下载文件夹中的备份文件</p>
+      <p>• 备份文件可保存到云盘或电脑，防止数据丢失</p>
       <p>• 更换设备时可通过备份文件迁移数据</p>
     </div>
 
