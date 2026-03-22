@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { db } from '../db'
 import type { Client } from '../models/client'
 import { showToast } from 'vant'
+import { triggerAutoSync } from '../services/autoSyncTrigger'
 
 const route = useRoute()
 const router = useRouter()
@@ -62,6 +63,7 @@ async function onSubmit() {
     })
     showToast('已创建')
   }
+  triggerAutoSync()
   router.back()
 }
 </script>

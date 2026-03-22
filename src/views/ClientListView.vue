@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { db } from '../db'
 import type { Client } from '../models/client'
 import { showConfirmDialog, showToast } from 'vant'
+import { triggerAutoSync } from '../services/autoSyncTrigger'
 
 const router = useRouter()
 const keyword = ref('')
@@ -60,6 +61,7 @@ async function onDelete(client: Client) {
       await db.clients.delete(client.id)
     })
     showToast('已删除')
+    triggerAutoSync()
     await loadClients()
     filterClients()
   } catch {

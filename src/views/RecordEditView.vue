@@ -7,6 +7,7 @@ import type { FieldDefinition } from '../models/template'
 import type { FieldValue } from '../models/record'
 import { showToast } from 'vant'
 import DynamicField from '../components/record/DynamicField.vue'
+import { triggerAutoSync } from '../services/autoSyncTrigger'
 
 const route = useRoute()
 const router = useRouter()
@@ -64,6 +65,7 @@ async function onSubmit() {
     updatedAt: Date.now(),
   })
   showToast('已更新')
+  triggerAutoSync()
   router.back()
 }
 </script>

@@ -2,6 +2,7 @@
 import { ref, onUnmounted } from 'vue'
 import { db } from '../../db'
 import { compressImage, createThumbnail } from '../../utils/image'
+import { triggerAutoSync } from '../../services/autoSyncTrigger'
 
 const props = defineProps<{
   modelValue: string[]
@@ -48,6 +49,7 @@ async function onFileChange(e: Event) {
 
     imageUrls.value[id] = URL.createObjectURL(thumbnail)
     emit('update:modelValue', [...props.modelValue, id])
+    triggerAutoSync()
   } catch (err) {
     console.error('图片处理失败', err)
   } finally {
@@ -63,6 +65,7 @@ async function removeImage(id: string) {
     delete imageUrls.value[id]
   }
   emit('update:modelValue', props.modelValue.filter(i => i !== id))
+  triggerAutoSync()
 }
 
 function showFull(id: string) {

@@ -5,6 +5,7 @@ import { db } from '../db'
 import type { Client } from '../models/client'
 import type { HealthRecord } from '../models/record'
 import { showConfirmDialog, showToast } from 'vant'
+import { triggerAutoSync } from '../services/autoSyncTrigger'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,6 +45,7 @@ async function deleteRecord(record: HealthRecord) {
       if (imageIds.length) await db.images.bulkDelete(imageIds)
     })
     showToast('已删除')
+    triggerAutoSync()
     records.value = records.value.filter(r => r.id !== record.id)
   } catch {
     // cancelled

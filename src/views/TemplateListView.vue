@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { db } from '../db'
 import type { Template } from '../models/template'
 import { showConfirmDialog, showToast } from 'vant'
+import { triggerAutoSync } from '../services/autoSyncTrigger'
 
 const router = useRouter()
 const templates = ref<Template[]>([])
@@ -27,6 +28,7 @@ async function onDelete(tpl: Template) {
     await db.templates.delete(tpl.id)
     templates.value = templates.value.filter(t => t.id !== tpl.id)
     showToast('已删除')
+    triggerAutoSync()
   } catch {
     // cancelled
   }
