@@ -31,7 +31,7 @@ export async function exportClientRecords(client: Client, records: HealthRecord[
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' }
 
   // 设置列宽
-  sheet.columns = headers.map((h, i) => ({
+  sheet.columns = headers.map((_, i) => ({
     width: i < 2 ? 16 : 20,
   }))
 

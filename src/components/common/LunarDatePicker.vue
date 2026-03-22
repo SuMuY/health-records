@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { getLunarMonths, getLunarDays, dayName, formatLunarDate, parseLunarDate, lunarToSolar, solarToLunar } from '../../utils/lunar'
+import { ref, computed } from 'vue'
+import { getLunarMonths, getLunarDays, dayName, formatLunarDate } from '../../utils/lunar'
 
 const props = defineProps<{
   modelValue: string

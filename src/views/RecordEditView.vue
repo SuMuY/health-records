@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '../db'
 import type { HealthRecord } from '../models/record'
-import type { Template, FieldDefinition } from '../models/template'
+import type { FieldDefinition } from '../models/template'
 import type { FieldValue } from '../models/record'
 import { showToast } from 'vant'
 import DynamicField from '../components/record/DynamicField.vue'
@@ -11,7 +11,6 @@ import DynamicField from '../components/record/DynamicField.vue'
 const route = useRoute()
 const router = useRouter()
 const recordId = route.params.recordId as string
-const clientId = route.params.clientId as string
 
 const record = ref<HealthRecord | null>(null)
 const fields = ref<FieldDefinition[]>([])
@@ -43,7 +42,6 @@ onMounted(async () => {
 })
 
 async function onSubmit() {
-  const rec = record.value!
   for (const f of fields.value) {
     if (f.required) {
       const val = fieldValues.value[f.id]

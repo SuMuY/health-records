@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '../db'
-import type { HealthRecord, StoredImage } from '../models/record'
+import type { HealthRecord } from '../models/record'
 
 const route = useRoute()
 const router = useRouter()

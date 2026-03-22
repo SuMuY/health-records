@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '../db'
-import type { Template, FieldDefinition } from '../models/template'
-import { showToast, showConfirmDialog } from 'vant'
+import type { FieldDefinition } from '../models/template'
+import { showToast } from 'vant'
 
 const route = useRoute()
 const router = useRouter()
@@ -171,7 +171,7 @@ async function onSubmit() {
           <!-- 单选/多选的选项 -->
           <template v-if="field.type === 'single_select' || field.type === 'multi_select'">
             <div class="options-section">
-              <div v-for="(opt, oi) in field.options" :key="oi" class="option-row">
+              <div v-for="(_, oi) in field.options" :key="oi" class="option-row">
                 <van-field v-model="field.options![oi]" :label="`选项${oi + 1}`" placeholder="输入选项" />
                 <van-icon name="cross" size="16" color="#969799" class="option-delete" @click="removeOption(field, oi)" />
               </div>
