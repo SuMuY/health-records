@@ -95,13 +95,9 @@ onUnmounted(() => {
         <van-icon name="cross" class="remove-btn" @click.stop="removeImage(id)" />
       </div>
       <label class="add-btn" :class="{ loading }">
-        <van-icon v-if="!loading" name="photograph" size="24" color="#969799" />
+        <van-icon v-if="!loading" name="plus" size="24" color="#969799" />
         <van-loading v-else size="20" />
-        <input type="file" accept="image/*" capture="environment" @change="onFileChange" hidden />
-      </label>
-      <label class="add-btn">
-        <van-icon name="photo-o" size="24" color="#969799" />
-        <input type="file" accept="image/*" @change="onFileChange" hidden />
+        <input type="file" accept="image/*" capture @change="onFileChange" hidden />
       </label>
     </div>
   </div>

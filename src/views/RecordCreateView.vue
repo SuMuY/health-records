@@ -35,37 +35,45 @@ function selectTemplate(tpl: Template) {
 }
 
 async function onSubmit() {
-  const tpl = selectedTemplate.value!
-  for (const f of tpl.fields) {
-    if (f.required) {
-      const val = fieldValues.value[f.id]
-      if (val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
-        showToast(`请填写「${f.label}」`)
-        return
+  try {
+    const tpl = selectedTemplate.value!
+
+    // 验证必填字段
+    for (const f of tpl.fields) {
+      if (f.required) {
+        const val = fieldValues.value[f.id]
+        if (val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
+          showToast(`请填写「${f.label}」`)
+          return
+        }
       }
     }
+
+    const values: FieldValue[] = tpl.fields.map(f => ({
+      fieldId: f.id,
+      fieldLabel: f.label,
+      fieldType: f.type,
+      value: fieldValues.value[f.id],
+    }))
+
+    const now = Date.now()
+    await db.records.add({
+      id: crypto.randomUUID(),
+      clientId,
+      templateId: tpl.id,
+      templateName: tpl.name,
+      values,
+      createdAt: now,
+      updatedAt: now,
+    })
+
+    showToast('档案已创建')
+    triggerAutoSync()
+    router.back()
+  } catch (err) {
+    console.error('保存档案失败', err)
+    showToast('保存失败：' + (err as Error).message)
   }
-
-  const values: FieldValue[] = tpl.fields.map(f => ({
-    fieldId: f.id,
-    fieldLabel: f.label,
-    fieldType: f.type,
-    value: fieldValues.value[f.id],
-  }))
-
-  const now = Date.now()
-  await db.records.add({
-    id: crypto.randomUUID(),
-    clientId,
-    templateId: tpl.id,
-    templateName: tpl.name,
-    values,
-    createdAt: now,
-    updatedAt: now,
-  })
-  showToast('档案已创建')
-  triggerAutoSync()
-  router.back()
 }
 </script>
 
