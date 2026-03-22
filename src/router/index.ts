@@ -14,6 +14,7 @@ const router = createRouter({
     { path: '/templates', component: () => import('../views/TemplateListView.vue'), meta: { tab: 'templates' } },
     { path: '/templates/new', component: () => import('../views/TemplateEditView.vue'), meta: { tab: 'templates' } },
     { path: '/templates/:id/edit', component: () => import('../views/TemplateEditView.vue'), meta: { tab: 'templates' } },
+    { path: '/settings', component: () => import('../views/SettingsView.vue'), meta: { tab: 'settings' } },
   ],
 })
 

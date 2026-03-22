@@ -9,6 +9,7 @@ const activeTab = computed(() => (route.meta.tab as string) || 'clients')
 function onTabChange(name: string | number) {
   if (name === 'clients') router.push('/clients')
   else if (name === 'templates') router.push('/templates')
+  else if (name === 'settings') router.push('/settings')
 }
 </script>
 
@@ -24,6 +25,7 @@ function onTabChange(name: string | number) {
     >
       <van-tabbar-item name="clients" icon="friends-o">客户</van-tabbar-item>
       <van-tabbar-item name="templates" icon="description">模板</van-tabbar-item>
+      <van-tabbar-item name="settings" icon="setting-o">设置</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
