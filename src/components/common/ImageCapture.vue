@@ -30,25 +30,33 @@ loadThumbnails()
 
 async function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
+  const files = input.files
+  if (!files || files.length === 0) return
 
   loading.value = true
   try {
-    const compressed = await compressImage(file, 1200, 0.8)
-    const thumbnail = await createThumbnail(file, 200)
-    const id = crypto.randomUUID()
+    const allIds = [...props.modelValue]
 
-    await db.images.add({
-      id,
-      blob: compressed,
-      mimeType: 'image/jpeg',
-      thumbnailBlob: thumbnail,
-      createdAt: Date.now(),
-    })
+    // 处理每个文件
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const compressed = await compressImage(file, 1200, 0.8)
+      const thumbnail = await createThumbnail(file, 200)
+      const id = crypto.randomUUID()
 
-    imageUrls.value[id] = URL.createObjectURL(thumbnail)
-    emit('update:modelValue', [...props.modelValue, id])
+      await db.images.add({
+        id,
+        blob: compressed,
+        mimeType: 'image/jpeg',
+        thumbnailBlob: thumbnail,
+        createdAt: Date.now(),
+      })
+
+      imageUrls.value[id] = URL.createObjectURL(thumbnail)
+      allIds.push(id)
+    }
+
+    emit('update:modelValue', allIds)
     triggerAutoSync()
   } catch (err) {
     console.error('图片处理失败', err)
@@ -97,7 +105,14 @@ onUnmounted(() => {
       <label class="add-btn" :class="{ loading }">
         <van-icon v-if="!loading" name="plus" size="24" color="#969799" />
         <van-loading v-else size="20" />
-        <input type="file" accept="image/*" capture @change="onFileChange" hidden />
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          capture="environment"
+          multiple
+          @change="onFileChange"
+          hidden
+        />
       </label>
     </div>
   </div>

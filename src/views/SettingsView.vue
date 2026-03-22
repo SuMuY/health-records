@@ -171,6 +171,25 @@ function formatBackupTime(time: Date | null): string {
   const days = Math.floor(hours / 24)
   return `${days}天前`
 }
+
+function showBackupLocationHelp() {
+  showDialog({
+    title: '备份文件位置',
+    message: `备份文件保存在：
+
+📱 iPhone/iPad：
+打开"文件"App → 浏览 → 我的iPhone（或iCloud Drive）→ 下载项
+
+文件名格式：
+健康档案自动备份_2026-03-22.json
+
+💡 建议：
+• 定期将备份文件移动到iCloud Drive，实现云端备份
+• 或通过AirDrop发送到电脑保存
+• 导入备份时，在"文件"App的"下载项"中找到备份文件`,
+    confirmButtonText: '知道了',
+  })
+}
 </script>
 
 <template>
@@ -201,6 +220,15 @@ function formatBackupTime(time: Date | null): string {
       >
         <template #label>
           <span style="color: #969799; font-size: 13px">手动触发一次备份</span>
+        </template>
+      </van-cell>
+
+      <van-cell title="备份文件位置" @click="showBackupLocationHelp">
+        <template #label>
+          <span style="color: #969799; font-size: 13px">点击查看备份文件保存在哪里</span>
+        </template>
+        <template #right-icon>
+          <van-icon name="question-o" />
         </template>
       </van-cell>
     </van-cell-group>
@@ -254,9 +282,9 @@ function formatBackupTime(time: Date | null): string {
 
     <div style="padding: 24px 16px; color: #969799; font-size: 13px; line-height: 1.6">
       <p style="margin-bottom: 8px">💡 使用建议：</p>
-      <p>• 启用自动备份，每天自动导出备份文件</p>
-      <p>• 定期整理下载文件夹中的备份文件</p>
-      <p>• 备份文件可保存到云盘或电脑，防止数据丢失</p>
+      <p>• 启用自动备份，每天自动导出备份文件到"下载项"</p>
+      <p>• 定期将备份文件移到iCloud Drive，实现云端备份</p>
+      <p>• 导入备份时，在"文件"App的"下载项"中找到备份文件</p>
       <p>• 更换设备时可通过备份文件迁移数据</p>
     </div>
 
