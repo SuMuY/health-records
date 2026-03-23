@@ -12,9 +12,11 @@ export default defineConfig({
       resolvers: [VantResolver()],
     }),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
       },
       manifest: {
         name: '客户健康档案管理',
