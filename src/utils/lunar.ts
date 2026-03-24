@@ -26,7 +26,7 @@ export function getLunarDays(year: number, month: number, isLeap: boolean): numb
 }
 
 /** 农历月份名 */
-function monthName(m: number): string {
+export function monthName(m: number): string {
   const names = ['', '正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月']
   return names[m] || `${m}月`
 }

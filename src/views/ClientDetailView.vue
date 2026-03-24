@@ -79,7 +79,6 @@ async function exportRecords() {
         <van-cell title="姓名" :value="client.name" />
         <van-cell title="性别" :value="genderLabel(client.gender)" />
         <van-cell v-if="client.phone" title="手机" :value="client.phone" />
-        <van-cell v-if="client.birthDate" title="出生日期" :value="client.birthDate" />
         <van-cell v-if="client.birthDateLunar" title="农历生日" :value="client.birthDateLunar" />
         <van-cell v-if="client.notes" title="备注" :label="client.notes" />
       </van-cell-group>

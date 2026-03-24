@@ -5,6 +5,7 @@ import { db } from '../db'
 import type { Client } from '../models/client'
 import { showToast } from 'vant'
 import { triggerAutoSync } from '../services/autoSyncTrigger'
+import LunarDatePicker from '../components/common/LunarDatePicker.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,7 +15,6 @@ const clientId = route.params.id as string
 const form = ref<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>({
   name: '',
   gender: 'male',
-  birthDate: '',
   birthDateLunar: '',
   phone: '',
   notes: '',
@@ -27,7 +27,6 @@ onMounted(async () => {
       form.value = {
         name: c.name,
         gender: c.gender,
-        birthDate: c.birthDate || '',
         birthDateLunar: c.birthDateLunar || '',
         phone: c.phone || '',
         notes: c.notes || '',
@@ -86,8 +85,11 @@ async function onSubmit() {
           </template>
         </van-field>
         <van-field v-model="form.phone" label="手机号" placeholder="请输入手机号" type="tel" />
-        <van-field v-model="form.birthDate" label="出生日期" placeholder="如 1990-01-15" />
-        <van-field v-model="form.birthDateLunar" label="农历生日" placeholder="如 庚午年腊月初一" />
+        <van-field label="农历生日">
+          <template #input>
+            <LunarDatePicker v-model="form.birthDateLunar!" calendar-mode="lunar" />
+          </template>
+        </van-field>
         <van-field v-model="form.notes" label="备注" placeholder="请输入备注" type="textarea" rows="2" autosize />
       </van-cell-group>
       <div style="margin: 16px">

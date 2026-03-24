@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { getLunarMonths, getLunarDays, dayName, formatLunarDate } from '../../utils/lunar'
+import { getLunarMonths, getLunarDays, dayName, formatLunarDate, parseLunarDate, monthName } from '../../utils/lunar'
 
 const props = defineProps<{
   modelValue: string
@@ -13,7 +13,18 @@ const emit = defineEmits<{
 
 const showPicker = ref(false)
 const mode = ref<'gregorian' | 'lunar'>(props.calendarMode === 'lunar' ? 'lunar' : 'gregorian')
-const displayText = computed(() => props.modelValue || '请选择日期')
+
+// 将存储值转为中文显示
+const displayText = computed(() => {
+  if (!props.modelValue) return '请选择日期'
+  // 尝试解析农历格式
+  const lunar = parseLunarDate(props.modelValue)
+  if (lunar) {
+    return `${lunar.year}年${lunar.isLeap ? '闰' : ''}${monthName(lunar.month)}${dayName(lunar.day)}`
+  }
+  // 公历格式直接显示
+  return props.modelValue
+})
 
 // 公历状态
 const gYear = ref(new Date().getFullYear())
