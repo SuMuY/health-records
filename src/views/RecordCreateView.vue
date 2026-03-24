@@ -28,10 +28,17 @@ onMounted(async () => {
 function selectTemplate(tpl: Template) {
   selectedTemplate.value = tpl
   showTemplatePicker.value = false
-  fieldValues.value = {}
+  const vals: Record<string, string | string[] | null> = {}
   for (const f of tpl.fields) {
-    fieldValues.value[f.id] = f.type === 'multi_select' ? [] : null
+    if (f.type === 'multi_select') {
+      vals[f.id] = []
+    } else if (f.type === 'image') {
+      vals[f.id] = []
+    } else {
+      vals[f.id] = ''
+    }
   }
+  fieldValues.value = vals
 }
 
 async function onSubmit() {
@@ -42,7 +49,7 @@ async function onSubmit() {
     for (const f of tpl.fields) {
       if (f.required) {
         const val = fieldValues.value[f.id]
-        if (val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
+        if (!val || (Array.isArray(val) && val.length === 0)) {
           showToast(`请填写「${f.label}」`)
           return
         }
@@ -53,7 +60,7 @@ async function onSubmit() {
       fieldId: f.id,
       fieldLabel: f.label,
       fieldType: f.type,
-      value: fieldValues.value[f.id],
+      value: fieldValues.value[f.id] || null,
     }))
 
     const now = Date.now()
